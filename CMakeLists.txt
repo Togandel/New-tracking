@@ -5,8 +5,8 @@ project ("Projet")
 
 add_executable (Projet 
 	       main.cpp
-	      # test.cpp
 	       traitement.cpp
+	       trackedPoint.cpp
 
 
 )
