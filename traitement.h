@@ -16,6 +16,6 @@ std::vector< DMatch > matcher (Mat,Mat);
 
 std::vector<KeyPoint> getPointCle (Mat );
 
-//Mat getHomography(Mat, Mat);
+Mat getHomography(Mat, Mat);
 
 #endif // TRAITEMENT_H

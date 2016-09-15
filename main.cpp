@@ -13,9 +13,6 @@ using namespace cv;
 
 
 
-
-
-
 int main(){
 
     Mat image;
@@ -44,11 +41,17 @@ int main(){
             capture++;
         }
 
-        if (capture==1)
-            image1=image;
+        if (capture==1){
+            image.copyTo(image1);
+            cout<< "first image taken"<<endl;
+            capture++;
+        }
 
-        if (capture==2)
-            image2=image;
+        if (capture==3){
+            image.copyTo(image2);
+            cout<<"second image taken"<<endl;
+            capture++;
+        }
 
         key=cvWaitKey(5);
     }
@@ -60,12 +63,11 @@ int main(){
     pointcle2=getPointCle(image2);
     descripteur1=detectionFeature(image1);
     descripteur2=detectionFeature(image2);
-
     std::vector<DMatch> pointsCommuns =matcher(descripteur1,descripteur2);
 
-    Mat finalImage;
-    drawMatches( image1, pointcle1, image2, pointcle2,pointsCommuns, finalImage, Scalar::all(-1), Scalar::all(-1),vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS );
-    imshow ("bon matchs",finalImage);
+
+
+
 
     key=cvWaitKey(5);
     while (key!='q') {

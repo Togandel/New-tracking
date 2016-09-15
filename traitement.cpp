@@ -3,6 +3,7 @@
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/video/video.hpp>
 #include <opencv2/opencv.hpp>
+#include "opencv2/calib3d/calib3d.hpp"
 #include <vector>
 #include "traitement.h"
 
@@ -15,7 +16,7 @@ using namespace std;
 
 Mat detectionFeature (Mat image){
     //Prend en entrée un image, et en retourne les points caractéristiques avec leur environnement.
-    int nbPoints = 3000;//détermine le nombre de points d'interets
+    int nbPoints = 5000;//détermine le nombre de points d'interets
     std::vector<KeyPoint> pointsCle;
     Mat descripteur;
 
@@ -34,7 +35,7 @@ Mat detectionFeature (Mat image){
 std::vector<KeyPoint> getPointCle (Mat image){
     // Pareil que celle d'avant, mais ne retourne que les points clés, sans environnement
 
-    int nbPoints = 3000;//détermine le nombre de points d'interets
+    int nbPoints = 5000;//détermine le nombre de points d'interets
     std::vector<KeyPoint> pointsCle;
     cv::ORB orb (nbPoints,1.2f,8,31,0,2,ORB::HARRIS_SCORE,31);
     //orb(nbPoints,1.2f,8,31,0,2,ORB::HARRIS_SCORE,31);
@@ -63,7 +64,7 @@ std::vector<KeyPoint> getPointCle (Mat image){
 
     matcher.match( descripteur1, descripteur2, matches );
 
-    double dmax = 0; double dmin= 1000;
+    double dmax = 0; double dmin= 100000;
 
     //calcul des distances max et min entre les matches
     for( int i = 0; i < matches.size(); i++ )
@@ -75,18 +76,20 @@ std::vector<KeyPoint> getPointCle (Mat image){
             dmax=d;
     }
 
+
     //on veut ne garder que les "bonnes zones communes" -> définir "bonnes zones" !!!
     std::vector<DMatch> bonMatches;
     for (int i=0;i<matches.size();i++)
     {
-        if (matches[i].distance<=2*dmin) //2*distance minimale est fixé arbitrairement
+        if (matches[i].distance<=5*dmin) //2*distance minimale est fixé arbitrairement
             bonMatches.push_back(matches[i]);
     }
+
      return bonMatches;
 
 }
 
-/*Mat getHomography(Mat image1,Mat image2){
+Mat getHomography(Mat image1,Mat image2){
     // Forme la matrice d'homographie et la retourne
 
    //bons matches
@@ -94,14 +97,13 @@ std::vector<KeyPoint> getPointCle (Mat image){
     std::vector<KeyPoint> pointcle2,pointcle1;
     //descriptor
     Mat descripteur1,descripteur2;
-    vector<Point2f> points1,points2;
+    std::vector<Point2f> points1,points2;
 
     pointcle1=getPointCle(image1);
     pointcle2=getPointCle(image2);
     descripteur1=detectionFeature(image1);
     descripteur2=detectionFeature(image2);
     bonMatches=matcher(descripteur1,descripteur2);
-
 
 
     for(int i = 0; i<bonMatches.size(); i++ )
@@ -112,8 +114,8 @@ std::vector<KeyPoint> getPointCle (Mat image){
         points2.push_back(pointcle2[bonMatches[i].trainIdx].pt); //Image2
     }
 
-    Mat H = findHomography(points1,points2,CV_RANSAC,1,noArray(),2000,0.995);
+    Mat H = findHomography(points1,points2,CV_RANSAC,1,noArray());
     return H;
 }
 
-*/
+
